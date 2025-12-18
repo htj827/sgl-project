@@ -40,7 +40,7 @@ jobs:
     uses: ./.github/workflows/pr-gate.yml
     secrets: inherit
 
-  per-commit-1-npu-a2:
+  stage-b-test-1-npu-a2:
     needs: [check-changes, pr-gate]
     if: needs.check-changes.outputs.main_package == 'true'
     runs-on: linux-aarch64-a2-1
@@ -76,10 +76,10 @@ jobs:
           STREAMS_PER_DEVICE: 32
         run: |
           export PATH="/usr/local/Ascend/8.3.RC1/compiler/bishengir/bin:${PATH}"
-          cd test/srt
-          python3 run_suite.py --suite per-commit-1-npu-a2
+          cd test
+          python3 run_suite.py --hw npu --suite stage-b-test-1-npu-a2
 
-  per-commit-2-npu-a2:
+  stage-b-test-2-npu-a2:
     needs: [check-changes, pr-gate]
     if: needs.check-changes.outputs.main_package == 'true'
     runs-on: linux-aarch64-a2-2
@@ -119,13 +119,13 @@ jobs:
           STREAMS_PER_DEVICE: 32
         run: |
           export PATH="/usr/local/Ascend/8.3.RC1/compiler/bishengir/bin:${PATH}"
-          cd test/srt
-          python3 run_suite.py --suite per-commit-2-npu-a2 --auto-partition-id ${{ matrix.part }} --auto-partition-size 3
+          cd test
+          python3 run_suite.py --hw npu --suite stage-b-test-2-npu-a2 --auto-partition-id ${{ matrix.part }} --auto-partition-size 3
 
-  per-commit-4-npu-a2:
+  stage-b-test-4-npu-a3:
     needs: [check-changes, pr-gate]
     if: needs.check-changes.outputs.main_package == 'true'
-    runs-on: linux-aarch64-a2-4
+    runs-on: linux-aarch64-a3-4
     container:
       image: swr.cn-southwest-2.myhuaweicloud.com/base_image/ascend-ci/cann:8.3.rc2-910b-ubuntu22.04-py3.11
     steps:
@@ -158,10 +158,10 @@ jobs:
           STREAMS_PER_DEVICE: 32
         run: |
           export PATH="/usr/local/Ascend/8.3.RC1/compiler/bishengir/bin:${PATH}"
-          cd test/srt
-          python3 run_suite.py --suite per-commit-4-npu-a2 --timeout-per-file 3600
+          cd test
+          python3 run_suite.py --hw npu --suite stage-b-test-4-npu-a3 --timeout-per-file 3600
 
-  per-commit-16-npu-a3:
+  stage-b-test-16-npu-a3:
     needs: [check-changes, pr-gate]
     if: needs.check-changes.outputs.main_package == 'true'
     runs-on: linux-aarch64-a3-16
@@ -201,5 +201,5 @@ jobs:
           STREAMS_PER_DEVICE: 32
         run: |
           export PATH="/usr/local/Ascend/8.3.RC1/compiler/bishengir/bin:${PATH}"
-          cd test/srt
-          python3 run_suite.py --suite per-commit-16-npu-a3 --timeout-per-file 3600 --auto-partition-id ${{ matrix.part }} --auto-partition-size 2
+          cd test
+          python3 run_suite.py --hw npu --suite stage-b-test-16-npu-a3 --timeout-per-file 3600 --auto-partition-id ${{ matrix.part }} --auto-partition-size 2

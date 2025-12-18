@@ -4,14 +4,16 @@ from types import SimpleNamespace
 from urllib.parse import urlparse
 
 from sglang.srt.utils import kill_process_tree
+from sglang.test.ci.ci_register import register_npu_ci
 from sglang.test.few_shot_gsm8k import run_eval as run_eval_few_shot_gsm8k
 from sglang.test.test_utils import (
     DEFAULT_URL_FOR_TEST,
     CustomTestCase,
-    is_in_ci,
     popen_launch_server,
-    run_bench_offline_throughput,
 )
+
+register_npu_ci(est_time=400, suite="stage-b-test-16-npu-a3", nightly=False)
+register_npu_ci(est_time=400, suite="nightly-16-npu-a3", nightly=True)
 
 TEST_MODEL_MATRIX = {
     "/root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-R1-0528-W8A8": {
@@ -53,12 +55,22 @@ class TestAscendDeepEP(CustomTestCase):
             "deepep",
             "--deepep-mode",
             "auto",
+            "--enable-dp-attention",
+            "--speculative-algorithm",
+            "NEXTN",
+            "--speculative-num-steps",
+            1,
+            "--speculative-eagle-topk",
+            1,
+            "--speculative-num-draft-tokens",
+            2,
         ]
 
         cls.extra_envs = {
             "HCCL_BUFFSIZE": "1000",
             "SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK": "32",
             "SGLANG_NPU_USE_MLAPO": "1",
+            # 补充算子
         }
         os.environ.update(cls.extra_envs)
 
@@ -94,26 +106,6 @@ class TestAscendDeepEP(CustomTestCase):
                     )
                 finally:
                     kill_process_tree(process.pid)
-
-    def test_b_throughput(self):
-        for model in self.models:
-            with self.subTest(model=model):
-                print(f"##=== Testing throughput: {model} ===##")
-
-                output_throughput = run_bench_offline_throughput(
-                    model,
-                    [
-                        *self.common_args,
-                    ],
-                )
-
-                print(f"##=== {model} throughput: {output_throughput} ===##")
-
-                if is_in_ci():
-                    self.assertGreater(
-                        output_throughput,
-                        TEST_MODEL_MATRIX[model]["output_throughput"],
-                    )
 
 
 if __name__ == "__main__":

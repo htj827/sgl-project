@@ -24,7 +24,13 @@ PER_COMMIT_SUITES = {
         "stage-b-test-small-1-gpu",
         "stage-b-test-small-2-gpu",
     ],
-    HWBackend.NPU: [],
+    HWBackend.NPU: [
+        "stage-a-test-1",
+        "stage-b-test-1-npu-a2",
+        "stage-b-test-2-npu-a2",
+        "stage-b-test-4-npu-a3",
+        "stage-b-test-16-npu-a3",
+    ],
 }
 
 # Nightly test suites (run nightly, organized by GPU configuration)

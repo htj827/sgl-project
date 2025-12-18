@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from urllib.parse import urlparse
 
 from sglang.srt.utils import kill_process_tree
+from sglang.test.ci.ci_register import register_npu_ci
 from sglang.test.few_shot_gsm8k import run_eval as run_eval_few_shot_gsm8k
 from sglang.test.test_utils import (
     DEFAULT_TIMEOUT_FOR_SERVER_LAUNCH,
@@ -12,6 +13,9 @@ from sglang.test.test_utils import (
     popen_launch_server,
     run_bench_offline_throughput,
 )
+
+register_npu_ci(est_time=400, suite="stage-b-test-4-npu-a3", nightly=False)
+register_npu_ci(est_time=400, suite="nightly-4-npu-a3", nightly=True)
 
 TEST_MODEL_MATRIX = {
     "/root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-V2-Lite-W8A8": {
